@@ -17,7 +17,14 @@ func (db *dbItem) Create(item models.Item) error {
 
 // Delete implements [ItemRepository].
 func (db *dbItem) Delete(idItem int) error {
-	return db.Conn.Where("id_item", idItem).Delete(&models.Item{IdItem: idItem}).Error
+	result := db.Conn.Where("id_item = ?", idItem).Delete(&models.Item{IdItem: idItem})
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+	return nil
 }
 
 // GetAll implements [ItemRepository].
@@ -42,7 +49,14 @@ func (db *dbItem) GetByID(idItem int) (models.Item, error) {
 
 // Update implements [ItemRepository].
 func (db *dbItem) Update(idItem int, item models.Item) error {
-	return db.Conn.Where("id_item", idItem).Updates(item).Error
+	result := db.Conn.Model(&models.Item{}).Where("id_item = ?", idItem).Updates(item)
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+	return nil
 }
 
 type ItemRepository interface {

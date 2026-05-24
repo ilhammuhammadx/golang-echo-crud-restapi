@@ -4,6 +4,7 @@ import (
 	"echo-rest-api-mysql/domain/item/helpers"
 	"echo-rest-api-mysql/domain/item/models"
 	"echo-rest-api-mysql/domain/item/repositories"
+	"errors"
 
 	"gorm.io/gorm"
 )
@@ -32,8 +33,13 @@ func (service *itemService) Create(item models.Item) helpers.Response {
 func (service *itemService) Delete(idItem int) helpers.Response {
 	var response helpers.Response
 
-	if err := service.itemRepo.Delete(idItem); err != nil {
+	err := service.itemRepo.Delete(idItem)
+	if err != nil {
 		response.Status = "error"
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			response.Message = "Item with the specified id was not found"
+			return response
+		}
 		response.Message = "Failed to delete item: " + err.Error()
 		return response
 	}
@@ -81,8 +87,13 @@ func (service *itemService) GetByID(idItem int) helpers.Response {
 func (service *itemService) Update(idItem int, item models.Item) helpers.Response {
 	var response helpers.Response
 
-	if err := service.itemRepo.Update(idItem, item); err != nil {
+	err := service.itemRepo.Update(idItem, item)
+	if err != nil {
 		response.Status = "error"
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			response.Message = "Item with the specified id was not found"
+			return response
+		}
 		response.Message = "Failed to update item: " + err.Error()
 		return response
 	}
