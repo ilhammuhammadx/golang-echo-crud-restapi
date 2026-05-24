@@ -3,17 +3,12 @@ package config
 import (
 	"log"
 
+	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-func initDB() *gorm.DB {
-	host := GetEnv("DB_HOST", "localhost")
-	port := GetEnv("DB_PORT", "3306")
-	user := GetEnv("DB_USER", "postgres")
-	password := GetEnv("DB_PASSWORD", "password")
-	dbname := GetEnv("DB_NAME", "myapp")
-
-	dsn := user + ":" + password + "@tcp(" + host + ":" + port + ")/" + dbname
+func InitDB(cfg DBConfig) *gorm.DB {
+	dsn := cfg.DSN()
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{SkipDefaultTransaction: true})
 
