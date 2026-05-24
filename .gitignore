@@ -1,0 +1,17 @@
+.env
+.env.local
+.env.*.local
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Editor directories and files
+.vscode/
+.idea/
+.DS_Store
